@@ -1,6 +1,6 @@
 <template>
     <div>
-
+<NewComponent />
         <form @submit.prevent="save">
    <h1>Employee Registration</h1>           
   <div class="form-group">
@@ -53,68 +53,69 @@
 
 <script>
   import axios from 'axios'
+import NewComponent from './NewComponent.vue';
     export default {
-        data(){
-            return{
-                results:{},
-                employee:{
-                    id:"",
-                    name:"",
-                    address:"",
-                    mobile:"",
-                }
+    data() {
+        return {
+            results: {},
+            employee: {
+                id: "",
+                name: "",
+                address: "",
+                mobile: "",
             }
+        };
+    },
+    created() {
+        this.EmployeeLoad();
+    },
+    methods: {
+        EmployeeLoad() {
+            var page = "http://127.0.0.1:8000/api/employees";
+            axios.get(page).then(({ data }) => {
+                console.log(data);
+                this.results = data;
+            });
         },
-        created(){
-            this.EmployeeLoad();
-        },
-        methods:{
-            EmployeeLoad(){
-                var page="http://127.0.0.1:8000/api/employees";
-                axios.get(page).then(({data})=>{
-                  console.log(data);
-                  this.results=data;
-                })
-            },
-            save(){
-              if(this.employee.id==''){
+        save() {
+            if (this.employee.id == "") {
                 this.saveData();
-              }
-              else{
-                this.updateData();
-              }
-            },
-            saveData(){
-                axios.post("http://127.0.0.1:8000/api/save",this.employee)
-                .then(({data})=>{
-                    alert("Saved")
-                    this.EmployeeLoad();
-                })
-            },
-            edit(employee){
-                this.employee=employee
-            },
-
-            updateData(){
-               var editrecords='http://127.0.0.1:8000/api/update/'+this.employee.id;
-               axios.put(editrecords,this.employee)
-               .then(({data})=>{
-                this.employee.name="",
-                this.employee.address="",
-                this.employee.mobile="",
-                this.id="",
-                alert("updated");
-                this.EmployeeLoad();
-               })
-            },
-            remove(employee){
-                var url=`http://127.0.0.1:8000/api/delete/${employee.id}`
-                axios.delete(url)
-                alert("Deleted");
-                this.EmployeeLoad();
             }
+            else {
+                this.updateData();
+            }
+        },
+        saveData() {
+            axios.post("http://127.0.0.1:8000/api/save", this.employee)
+                .then(({ data }) => {
+                alert("Saved");
+                this.EmployeeLoad();
+            });
+        },
+        edit(employee) {
+            this.employee = employee;
+        },
+        updateData() {
+            var editrecords = "http://127.0.0.1:8000/api/update/" + this.employee.id;
+            axios.put(editrecords, this.employee)
+                .then(({ data }) => {
+                this.employee.name = "",
+                    this.employee.address = "",
+                    this.employee.mobile = "",
+                    this.id = "",
+                    alert("updated");
+                this.EmployeeLoad();
+            });
+        },
+        remove(employee) {
+            var url = `http://127.0.0.1:8000/api/delete/${employee.id}`;
+            axios.delete(url);
+            alert("Deleted");
+            this.EmployeeLoad();
         }
-    }
+    },
+    components: { NewComponent }
+}
 </script>
 
 <style scoped>
